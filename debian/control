@@ -13,7 +13,7 @@ XS-Vcs-Browser: http://git.openinkpot.org/emupdf.git
 Package: libemupdf-dev
 Section: libdevel
 Architecture: any
-Depends: libemupdf0 (= ${Source-Version})
+Depends: libemupdf0 (= ${Source-Version}), libmupdf-dev
 Description: Enlightenment DR17 PDF viewer using MuPDF - development files
 
 Package: libemupdf0
