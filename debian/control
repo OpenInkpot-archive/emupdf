@@ -1,0 +1,35 @@
+Source: emupdf
+Section: gui
+Priority: optional
+Maintainer: Alexander Kerner <lunohod@openinkpot.org>
+Build-Depends: debhelper (>= 6), cdbs, automake1.7 | automaken, libtool, pkg-config, libmupdf-dev
+Standards-Version: 3.7.3
+Homepage: http://www.enlightenment.org
+XCS-Cross-Host-Build-Depends: debhelper (>= 6), cdbs, cdbs-embedded, automake, libtool, pkg-config
+XCS-Cross-Build-Depends: libecore-dev, libevas-dev, libmupdf-dev
+XS-Vcs-Git: http://git.openinkpot.org/emupdf.git
+XS-Vcs-Browser: http://git.openinkpot.org/emupdf.git
+
+Package: libemupdf-dev
+Section: libdevel
+Architecture: any
+Depends: libemupdf0 (= ${Source-Version})
+Description: Enlightenment DR17 PDF viewer using MuPDF - development files
+
+Package: libemupdf0
+Architecture: any
+Depends: ${shlibs:Depends}
+Conflicts: libepdf0
+Provides: libpdf
+Description: Enlightenment DR17 PDF viewer using MuPDF.
+
+Package: libemupdf-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: libemupdf0 (= ${binary:Version})
+Description: Enlightenment DR17 PDF viewer using MuPDF - debug symbols
+ This package contains unstripped shared libraries. It is provided primarily
+ to provide a backtrace with names in a debugger, this makes it somewhat easier
+ to interpret core dumps. The libraries are installed in /usr/lib/debug and
+ are automatically used by gdb.
