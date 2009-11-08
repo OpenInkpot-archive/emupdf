@@ -37,6 +37,8 @@ int epdf_page_page_get(const Epdf_Page* page);
 
 void epdf_page_size_get(const Epdf_Page* page, int* width, int* height);
 
+void epdf_page_content_geometry_get(const Epdf_Page* page, int* x, int* y, int* width, int* height);
+
 void epdf_page_scale_set(Epdf_Page* page,
         double hscale,
         double vscale);
