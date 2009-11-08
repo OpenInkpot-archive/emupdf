@@ -1,3 +1,10 @@
+emupdf (0.1-2) asimov; urgency=low
+
+  * Fix libemupdf-dev dependencies
+  * Add epdf_page_content_geometry_get to header file
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sun, 08 Nov 2009 16:35:37 +0100
+
 emupdf (0.1-1) asimov; urgency=low
 
   * First build
