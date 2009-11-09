@@ -23,7 +23,7 @@ Conflicts: libepdf0
 Provides: libpdf
 Description: Enlightenment DR17 PDF viewer using MuPDF.
 
-Package: libemupdf-dbg
+Package: libemupdf0-dbg
 Architecture: any
 Section: debug
 Priority: extra
