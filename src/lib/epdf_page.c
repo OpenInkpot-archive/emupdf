@@ -31,12 +31,6 @@ void epdf_page_delete(Epdf_Page* page)
     if(!page)
         return;
 
-    if(page->image)
-    {
-        fz_droppixmap(page->image);
-        page->image = NULL;
-    }
-
     if(page->page)
     {
         pdf_droppage(page->page); 
@@ -89,6 +83,19 @@ void epdf_page_render(Epdf_Page* page, Evas_Object* o)
     epdf_page_render_slice(page, o, 0, 0, -1, -1);
 }
 
+void evas_object_callback_del(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+    fz_pixmap* image;
+
+    image = (fz_pixmap*)evas_object_data_get(obj, "emupdf_image");
+    if(image) {
+        evas_object_event_callback_del(obj, EVAS_CALLBACK_DEL, evas_object_callback_del);
+        evas_object_data_del(obj, "emupdf_image");
+        fz_droppixmap(image);
+        image = nil;
+    }
+}
+
 void epdf_page_render_slice(Epdf_Page* page,
         Evas_Object* o,
         int          x,
@@ -100,6 +107,7 @@ void epdf_page_render_slice(Epdf_Page* page,
     fz_matrix ctm;
     fz_rect bbox;
     fz_obj* obj;
+    fz_pixmap* image;
 
     if(!page)
         return;
@@ -111,10 +119,14 @@ void epdf_page_render_slice(Epdf_Page* page,
     if(!doc)
         return;
 
-    // draw page
-    if(page->image)
-        fz_droppixmap(page->image);
-    page->image = nil;
+    // drop old pixmap
+    image = (fz_pixmap*)evas_object_data_get(o, "emupdf_image");
+    if(image) {
+        evas_object_event_callback_del(o, EVAS_CALLBACK_DEL, evas_object_callback_del);
+        evas_object_data_del(o, "emupdf_image");
+        fz_droppixmap(image);
+        image = nil;
+    }
 
     ctm = epdf_page_viewctm(page);
 
@@ -130,41 +142,26 @@ void epdf_page_render_slice(Epdf_Page* page,
         bbox.y1 = y + h;
     }
 
-    error = fz_rendertree(&page->image, doc->rast, page->page->tree,
+    error = fz_rendertree(&image, doc->rast, page->page->tree,
             ctm, fz_roundrect(bbox), 1);
-    if(error)
+    if(error || !image)
         return;
 
-    int width = page->image->w;
-    int height = page->image->h;
-
-    /*evas_object_image_data_set(o, page->image->samples);
-      evas_object_image_fill_set(o, 0, 0, width, height);
-      evas_object_image_size_set(o, width, height);
-      evas_object_image_data_update_add(o, 0, 0, width, height);
-      evas_object_resize(o, width, height);
-      */
+    int width = image->w;
+    int height = image->h;
 
     evas_object_image_size_set(o, width, height);
+    evas_object_image_data_set(o, image->samples);
     evas_object_image_fill_set(o, 0, 0, width, height);
-
-    //memcpy(m, page->image->samples, height * width * 4);
-    unsigned char* s = page->image->samples;
-    unsigned char* d = (unsigned char*)evas_object_image_data_get(o, 1);
-    for(int i = 0; i < height * width; i++, s+=4, d+=4)
-    {
-        d[0] = s[3];
-        d[1] = s[2];
-        d[2] = s[1];
-        d[3] = s[0];
-    }
-
-    if(page->image)
-        fz_droppixmap(page->image);
-    page->image = nil;
-
     evas_object_image_data_update_add(o, 0, 0, width, height);
     evas_object_resize(o, width, height);
+
+    unsigned* d = evas_object_image_data_get(o, 1);
+    for(int i = 0; i < height * width; i++, d++)
+        *d = htonl(*d);
+
+    evas_object_data_set(o, "emupdf_image", image);
+    evas_object_event_callback_add(o, EVAS_CALLBACK_DEL, evas_object_callback_del, NULL);
 }
 
 void epdf_page_page_set(Epdf_Page* page, int p)
