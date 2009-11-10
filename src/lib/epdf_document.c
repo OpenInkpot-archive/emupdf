@@ -183,16 +183,13 @@ static char* epdf_document_property_get(const Epdf_Document* doc, const char* pr
 
     if(doc->xref->info)
     {
-        fz_obj* key;
-        char* l_property = strdup(property);
-        error = fz_newname(&key, l_property);
-        if(l_property)
-            free(l_property);
-        if(!error)
+        obj = fz_dictgets(doc->xref->info, property);
+        if(obj)
         {
-            obj = fz_dictget(doc->xref->info, key);
-            if(obj && pdf_toutf8(&ret, obj))
+            if(pdf_toutf8(&ret, obj))
                 return ret;
+            else
+                return fz_tostrbuf(obj);
         }
     }
 
@@ -254,26 +251,17 @@ static char* epdf_document_date_get(const Epdf_Document* doc, const char* type)
 
     if(doc->xref->info)
     {
-        fz_obj* key;
-        char* l_type = strdup(type);
-        error = fz_newname(&key, l_type);
-        if(l_type)
-            free(l_type);
-        if(!error)
+        obj = fz_dictgets(doc->xref->info, type);
+        if(obj)
         {
-            obj = fz_dictget(doc->xref->info, key);
-            if(obj)
-            {
-                int year, month, day, hour, minute, second;
-                char* date = obj->u.s.buf;
-                if(date[0] == 'D')
-                    date += 2;
-                sscanf(date, "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &minute, &second);
-                asprintf(&date, "%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+            int year, month, day, hour, minute, second;
+            char* date = fz_tostrbuf(obj);
+            if(date[0] == 'D')
+                date += 2;
+            sscanf(date, "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &minute, &second);
+            asprintf(&date, "%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 
-                return date;
-            }
-
+            return date;
         }
     }
 
