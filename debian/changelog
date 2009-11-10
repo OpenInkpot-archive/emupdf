@@ -1,3 +1,10 @@
+emupdf (0.1-4) asimov; urgency=low
+
+  * Fix info extractors
+  * Add missing functions to epdf_document.h
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Tue, 10 Nov 2009 01:46:41 +0100
+
 emupdf (0.1-3) asimov; urgency=low
 
   * Add suffix to -dbg package name
