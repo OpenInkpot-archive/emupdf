@@ -4,19 +4,7 @@
 #include <Evas.h>
 #include <Ecore_Data.h>
 
-#include <fitz.h>
-#include <mupdf.h>
-
-#include "epdf_private.h"
-
-/*typedef struct
-  {
-  double x1;
-  double y1;
-  double x2;
-  double y2;
-  } Epdf_Rectangle;
-  */
+#include "epdf_forward.h"
 
 Epdf_Page* epdf_page_new(const Epdf_Document* doc);
 

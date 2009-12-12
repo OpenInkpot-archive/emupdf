@@ -1,6 +1,8 @@
 #ifndef __EPDF_INDEX_H__
 #define __EPDF_INDEX_H__
 
+#include "epdf_forward.h"
+
 Epdf_Index_Item * epdf_index_item_new ();
 const char *epdf_index_item_title_get (const Epdf_Index_Item *item);
 Ecore_List *epdf_index_item_children_get (const Epdf_Index_Item *item);

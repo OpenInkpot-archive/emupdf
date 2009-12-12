@@ -7,9 +7,7 @@
 #include <mupdf.h>
 #include <fitz.h>
 
-typedef struct _Epdf_Document Epdf_Document;
-typedef struct _Epdf_Index_Item Epdf_Index_Item;
-typedef struct _Epdf_Page Epdf_Page;
+#include "epdf_forward.h"
 
 struct _Epdf_Page
 {
