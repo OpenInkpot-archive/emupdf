@@ -1,6 +1,8 @@
 #include <Evas.h>
 #include <Ecore_Data.h>
 
+#include <arpa/inet.h>
+
 #include <fitz.h>
 #include <mupdf.h>
 
@@ -69,8 +71,8 @@ static void epdf_page_load(Epdf_Page* page)
         return;
 
     // load page
-    error = pdf_getpageobject(doc->xref, page->index, &obj);
-    if(error)
+    obj = pdf_getpageobject(doc->xref, page->index);
+    if(!obj)
         return;
 
     error = pdf_loadpage(&page->page, doc->xref, obj);
@@ -106,7 +108,6 @@ void epdf_page_render_slice(Epdf_Page* page,
     fz_error error;
     fz_matrix ctm;
     fz_rect bbox;
-    fz_obj* obj;
     fz_pixmap* image;
 
     if(!page)
@@ -216,7 +217,6 @@ void epdf_page_content_geometry_get(const Epdf_Page* page, int* x, int* y, int* 
         epdf_page_load((Epdf_Page*)page);
 
     fz_rect contentbox = fz_boundnode(page->page->tree->root, fz_identity());
-    fz_rect b = contentbox;
 
     *x = contentbox.x0;
     *y = contentbox.y0;

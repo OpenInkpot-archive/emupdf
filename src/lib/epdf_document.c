@@ -40,8 +40,8 @@ Epdf_Document* epdf_document_new(const char* filename)
 
     // Open PDF and load xref table
 
-    error = pdf_newxref(&doc->xref);
-    if(error)
+    doc->xref = pdf_newxref();
+    if(!doc->xref)
         return pdfdoc_error(doc);
 
     error = pdf_loadxref(doc->xref, (char*)filename);
@@ -68,7 +68,7 @@ Epdf_Document* epdf_document_new(const char* filename)
      * TODO: move this into mupdf library
      */
 
-    obj = fz_dictgets(doc->xref->trailer, "Root");
+    obj = fz_dictgets(doc->xref->trailer, (char*)"Root");
     doc->xref->root = fz_resolveindirect(obj);
     if(!doc->xref->root)
     {
@@ -84,29 +84,21 @@ Epdf_Document* epdf_document_new(const char* filename)
     if(doc->xref->info)
         fz_keepobj(doc->xref->info);
 
-    error = pdf_loadoutline(&doc->outline, doc->xref);
-    if(error)
-        pdfdoc_error(doc);
+    doc->outline = pdf_loadoutline(doc->xref);
 
     doc->filename = strdup(filename);
     if(doc->xref->info)
     {
         obj = fz_dictgets(doc->xref->info, "Title");
         if(obj)
-        {
-            error = pdf_toutf8(&doc->doctitle, obj);
-            if(error)
-                doc->doctitle = NULL;
-        }
+            doc->doctitle = pdf_toutf8(obj);
     }
 
     /*
      * Start at first page
      */
 
-    error = pdf_getpagecount(doc->xref, &doc->pagecount);
-    if(error)
-        pdfdoc_error(doc);
+    doc->pagecount = pdf_getpagecount(doc->xref);
 
     if(doc->zoom < 0.1)
         doc->zoom = 0.1;
@@ -158,11 +150,12 @@ unsigned char epdf_document_unlock(Epdf_Document* doc, const char* password)
     if(!doc)
         return 0;
 
-    if(doc->locked)
+    if(doc->locked) {
         if(!pdf_authenticatepassword(doc->xref, (char*)password))
             fprintf(stderr, "Invalid password.\n");
         else
             doc->locked = false;
+	}
 
     return doc->locked?1:0;
 }
@@ -177,16 +170,15 @@ int epdf_document_page_count_get(const Epdf_Document* doc)
 
 static char* epdf_document_property_get(const Epdf_Document* doc, const char* property)
 {
-    fz_error error;
     fz_obj* obj;
     char* ret;
 
     if(doc->xref->info)
     {
-        obj = fz_dictgets(doc->xref->info, property);
+        obj = fz_dictgets(doc->xref->info, (char*)property);
         if(obj)
         {
-            if(pdf_toutf8(&ret, obj))
+            if((ret = pdf_toutf8(obj)))
                 return ret;
             else
                 return fz_tostrbuf(obj);
@@ -246,12 +238,11 @@ char* epdf_document_producer_get(const Epdf_Document* doc)
 
 static char* epdf_document_date_get(const Epdf_Document* doc, const char* type)
 {
-    fz_error error;
     fz_obj* obj;
 
     if(doc->xref->info)
     {
-        obj = fz_dictgets(doc->xref->info, type);
+        obj = fz_dictgets(doc->xref->info, (char*)type);
         if(obj)
         {
             int year, month, day, hour, minute, second;

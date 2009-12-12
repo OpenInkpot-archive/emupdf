@@ -71,8 +71,6 @@ Epdf_Link_Action_Kind epdf_index_item_action_kind_get(const Epdf_Index_Item* ite
 
 int epdf_index_item_page_get(const Epdf_Document* doc, const Epdf_Index_Item* item)
 {
-    bool delete_dest = false;
-
     if(!item || !item->link)
         return -1;
 
@@ -98,9 +96,8 @@ int epdf_index_item_page_get(const Epdf_Document* doc, const Epdf_Index_Item* it
 
     for(p = 1; p <= epdf_document_page_count_get(doc); p++)
     {
-        fz_obj* page;
-        fz_error error = pdf_getpageobject(doc->xref, p, &page);
-        if(error)
+        fz_obj* page = pdf_getpageobject(doc->xref, p);
+        if(!page)
             continue;
         int np = fz_tonum(page);
         int gp = fz_togen(page);
@@ -131,9 +128,6 @@ Ecore_List* epdf_index_new(const Epdf_Document* doc)
 
 void epdf_index_delete(Ecore_List* index)
 {
-    Ecore_List* items = index;
-    Epdf_Index_Item* item;
-
     if(!index)
         return;
 

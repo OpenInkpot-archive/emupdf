@@ -2,11 +2,11 @@ Source: emupdf
 Section: gui
 Priority: optional
 Maintainer: Alexander Kerner <lunohod@openinkpot.org>
-Build-Depends: debhelper (>= 6), cdbs, automake1.7 | automaken, libtool, pkg-config, libmupdf-dev
+Build-Depends: debhelper (>= 6), cdbs, automake1.7 | automaken, libtool, pkg-config, libmupdf-dev (>= 0.4-20091212-2)
 Standards-Version: 3.7.3
 Homepage: http://www.enlightenment.org
 XCS-Cross-Host-Build-Depends: debhelper (>= 6), cdbs, cdbs-embedded, automake, libtool, pkg-config
-XCS-Cross-Build-Depends: libecore-dev, libevas-dev, libmupdf-dev
+XCS-Cross-Build-Depends: libecore-dev, libevas-dev, libmupdf-dev (>= 0.4-20091212-2)
 XS-Vcs-Git: http://git.openinkpot.org/emupdf.git
 XS-Vcs-Browser: http://git.openinkpot.org/emupdf.git
 
