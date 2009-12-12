@@ -4,7 +4,7 @@ emupdf (0.1-6) zelazny; urgency=low
   * Rearrange public headers
   * Remove obsolete configure option
 
- -- Alexander Kerner <alex@hosaka.homeunix.net>  Sat, 12 Dec 2009 21:29:21 +0100
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sat, 12 Dec 2009 21:29:21 +0100
 
 emupdf (0.1-5) asimov; urgency=low
 
