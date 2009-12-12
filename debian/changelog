@@ -1,3 +1,11 @@
+emupdf (0.1-6) zelazny; urgency=low
+
+  * Fixes for mupdf API changes
+  * Rearrange public headers
+  * Remove obsolete configure option
+
+ -- Alexander Kerner <alex@hosaka.homeunix.net>  Sat, 12 Dec 2009 21:29:21 +0100
+
 emupdf (0.1-5) asimov; urgency=low
 
   * Use fz_pixmap row data in evas image object
