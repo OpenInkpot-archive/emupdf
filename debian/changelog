@@ -1,3 +1,9 @@
+emupdf (0.1-7) zelazny; urgency=low
+
+  * Add epdf_forward.h to installed files
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Tue, 29 Dec 2009 23:43:16 +0100
+
 emupdf (0.1-6) zelazny; urgency=low
 
   * Fixes for mupdf API changes
