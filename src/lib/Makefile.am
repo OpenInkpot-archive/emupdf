@@ -8,7 +8,8 @@ epdf_document.h \
 epdf_enum.h \
 epdf_page.h \
 epdf_index.h \
-epdf_main.h
+epdf_main.h \
+epdf_forward.h
 
 PRIVATEHEADERS = epdf_private.h
 
