@@ -1,3 +1,9 @@
+emupdf (0.1.8) zelazny; urgency=low
+
+  * Adjustment to ecore API changes
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Sun, 04 Jul 2010 23:42:41 +0200
+
 emupdf (0.1.7+b1) zelazny; urgency=low
 
   * Rebuild due to EFL update
