@@ -3,7 +3,8 @@
 
 #include <stdbool.h>
 
-#include <Ecore_Data.h>
+#include <Eina.h>
+
 #include <mupdf.h>
 #include <fitz.h>
 
@@ -34,7 +35,7 @@ struct _Epdf_Index_Item
 {
     char       *title;
     pdf_link   *link;
-    Ecore_List *children;
+    Eina_List *children;
 };
 
 #endif /* __EPDF_PRIVATE_H__ */

@@ -1,12 +1,13 @@
 #include <fitz.h>
 #include <mupdf.h>
 
+#include <Eina.h>
 #include "epdf_enum.h"
 #include "epdf_private.h"
 #include "Epdf.h"
 
-static void epdf_index_fill(Ecore_List* items, pdf_outline* entry);
-static void epdf_index_unfill(Ecore_List* items);
+static void epdf_index_fill(Eina_List** items, pdf_outline* entry);
+static void epdf_index_unfill(Eina_List* items);
 
 /* Index item */
 Epdf_Index_Item* epdf_index_item_new()
@@ -35,8 +36,7 @@ void epdf_index_item_delete(Epdf_Index_Item* item)
     {
         Epdf_Index_Item* i;
 
-        ecore_list_first_goto(item->children);
-        while((i = (Epdf_Index_Item*)ecore_list_next(item->children)))
+        EINA_LIST_FREE(item->children, i)
             epdf_index_item_delete(i);
     }
     free(item);
@@ -50,7 +50,7 @@ const char* epdf_index_item_title_get(const Epdf_Index_Item* item)
     return item->title;
 }
 
-Ecore_List* epdf_index_item_children_get(const Epdf_Index_Item* item)
+Eina_List* epdf_index_item_children_get(const Epdf_Index_Item* item)
 {
     if(!item)
         return NULL;
@@ -110,9 +110,9 @@ int epdf_index_item_page_get(const Epdf_Document* doc, const Epdf_Index_Item* it
 
 /* Index */
 
-Ecore_List* epdf_index_new(const Epdf_Document* doc)
+Eina_List* epdf_index_new(const Epdf_Document* doc)
 {
-    Ecore_List* index = NULL;
+    Eina_List* index = NULL;
 
     if(!doc)
         return index;
@@ -120,13 +120,12 @@ Ecore_List* epdf_index_new(const Epdf_Document* doc)
     if(doc->outline == NULL)
         return index;
 
-    index = ecore_list_new();
-    epdf_index_fill(index, doc->outline);
+    epdf_index_fill(&index, doc->outline);
 
     return index;
 }
 
-void epdf_index_delete(Ecore_List* index)
+void epdf_index_delete(Eina_List* index)
 {
     if(!index)
         return;
@@ -134,7 +133,7 @@ void epdf_index_delete(Ecore_List* index)
     epdf_index_unfill(index);
 }
 
-static void epdf_index_fill(Ecore_List* items, pdf_outline* entry)
+static void epdf_index_fill(Eina_List **items, pdf_outline* entry)
 {
     if(!items || !entry)
         return;
@@ -144,35 +143,25 @@ static void epdf_index_fill(Ecore_List* items, pdf_outline* entry)
     item->title = entry->title;
     item->link = entry->link;
 
-    ecore_list_append(items, item);
+    *items = eina_list_append(*items, item);
 
     if(entry->child)
     {
-        item->children = ecore_list_new();
-        epdf_index_fill(item->children, entry->child);
+        item->children = NULL;
+        epdf_index_fill(&item->children, entry->child);
     }
 
     if(entry->next)
         epdf_index_fill(items, entry->next);
 }
 
-static void epdf_index_unfill(Ecore_List* items)
+static void epdf_index_unfill(Eina_List* items)
 {
     Epdf_Index_Item* item;
 
     if(!items)
         return;
 
-    ecore_list_first_goto(items);
-    while((item = (Epdf_Index_Item*)ecore_list_next(items)))
-    {
-        /*
-         * if (item->title)
-         * free (item->title);
-         * if (item->children)
-         * epdf_index_unfill (item->children);
-         */
+    EINA_LIST_FREE(items, item)
         free (item);
-    }
-    ecore_list_destroy (items);
 }
