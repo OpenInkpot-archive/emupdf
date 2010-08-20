@@ -84,6 +84,7 @@ void epdf_page_render(Epdf_Page* page, Evas_Object* o)
     epdf_page_render_slice(page, o, 0, 0, -1, -1);
 }
 
+/*
 void evas_object_callback_del(void *data, Evas *e, Evas_Object *obj, void *event_info)
 {
     fz_pixmap* image;
@@ -96,6 +97,7 @@ void evas_object_callback_del(void *data, Evas *e, Evas_Object *obj, void *event
         image = nil;
     }
 }
+*/
 
 void epdf_page_render_slice(Epdf_Page* page,
         Evas_Object* o,
@@ -119,6 +121,7 @@ void epdf_page_render_slice(Epdf_Page* page,
     if(!doc)
         return;
 
+    /*
     // drop old pixmap
     image = (fz_pixmap*)evas_object_data_get(o, "emupdf_image");
     if(image) {
@@ -127,6 +130,7 @@ void epdf_page_render_slice(Epdf_Page* page,
         fz_droppixmap(image);
         image = nil;
     }
+    */
 
     ctm = epdf_page_viewctm(page);
 
@@ -151,17 +155,44 @@ void epdf_page_render_slice(Epdf_Page* page,
     int height = image->h;
 
     evas_object_image_size_set(o, width, height);
-    evas_object_image_data_set(o, image->samples);
+    //evas_object_image_data_set(o, image->samples);
     evas_object_image_fill_set(o, 0, 0, width, height);
     evas_object_image_data_update_add(o, 0, 0, width, height);
     evas_object_resize(o, width, height);
 
+/*  32bit
     unsigned* d = evas_object_image_data_get(o, 1);
     for(int i = 0; i < height * width; i++, d++)
         *d = htonl(*d);
 
     evas_object_data_set(o, "emupdf_image", image);
-    evas_object_event_callback_add(o, EVAS_CALLBACK_DEL, evas_object_callback_del, NULL);
+*/
+
+    /* 32 -> 8bit */
+#define GRY_8_FROM_COMPONENTS(r, g, b)	\
+     (((218 * (r)) +	\
+       (732 * (g)) +	\
+       (74  * (b))) >> 10)
+
+    int rest;
+    if ((width % image->n) == 0)
+        rest = 0;
+    else
+        rest = (width / image->n + 1) * image->n - width;
+    unsigned char *d = evas_object_image_data_get(o, 1);
+    unsigned char *s = image->samples;
+    for (int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            *d = GRY_8_FROM_COMPONENTS(s[1], s[2], s[3]);
+            d++;
+            s += 4;
+        }
+        d += rest;
+    }
+
+    fz_droppixmap(image);
+
+    //evas_object_event_callback_add(o, EVAS_CALLBACK_DEL, evas_object_callback_del, NULL);
 }
 
 void epdf_page_page_set(Epdf_Page* page, int p)
