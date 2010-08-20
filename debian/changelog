@@ -1,3 +1,9 @@
+emupdf (0.1.9) zelazny; urgency=low
+
+  * Adjust emupdf to work with 8bpp images
+
+ -- Alexander Kerner <lunohod@openinkpot.org>  Fri, 20 Aug 2010 15:03:00 +0200
+
 emupdf (0.1.8) zelazny; urgency=low
 
   * Adjustment to ecore API changes
